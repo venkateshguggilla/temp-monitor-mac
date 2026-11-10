@@ -94,6 +94,11 @@ final class SensorService {
             if let hi = maximum(hid, matching: ["ACC MTR Temp", "PMU tdie", "SOC MTR Temp"]) {
                 r.details.append(Detail(label: "Hottest sensor", value: String(format: "%.0f °C", hi)))
             }
+        } else if isAppleSilicon, let t = smcAverage(prefixes: ["Tp", "Te"]) {
+            // Newer Apple chips publish few HID sensors; their SMC still has per-cluster die keys.
+            r.temperature = t.average
+            r.temperatureSource = "average of SMC die sensors"
+            r.details.append(Detail(label: "Hottest sensor", value: String(format: "%.0f °C", t.max)))
         } else {
             r.temperatureUnavailableReason = smc.isOpen ? "No CPU temperature sensor found" : "Could not open the SMC"
         }
@@ -146,6 +151,9 @@ final class SensorService {
                 if let t = average(hid, matching: ["GPU MTR Temp"]) {
                     r.temperature = t
                     r.temperatureSource = "average of die sensors"
+                } else if let t = smcAverage(prefixes: ["Tg"]) {
+                    r.temperature = t.average
+                    r.temperatureSource = "average of SMC die sensors"
                 } else {
                     r.temperatureUnavailableReason = "No GPU temperature sensor found"
                 }
@@ -255,6 +263,13 @@ final class SensorService {
             out[name.isEmpty ? "sensor \(i)" : name] = values[i]
         }
         return out
+    }
+
+    /// Average and maximum of the plausible SMC temperatures whose keys start with `prefixes`.
+    private func smcAverage(prefixes: [String]) -> (average: Double, max: Double)? {
+        let v = rawKeys.filter { k in prefixes.contains { k.hasPrefix($0) } }.compactMap(smc.temperature)
+        guard !v.isEmpty else { return nil }
+        return (v.reduce(0, +) / Double(v.count), v.max()!)
     }
 
     private func matches(_ hid: [String: Double], _ patterns: [String]) -> [Double] {

@@ -6,11 +6,21 @@ A native Mac app that shows live temperature and usage for the CPU, GPU(s), RAM 
 
 **No admin rights, drivers or installs needed.** Everything is read directly from the hardware through IOKit.
 
-## Run it
+## Install
 
-Open `dist/Temp Monitor.app`, or copy it to `/Applications` first.
+Download from the [latest release](https://github.com/venkateshguggilla/temp-monitor-mac/releases/latest). It works on **Apple Silicon (M1, M2, M3, M4…) and Intel Macs running macOS 14 (Sonoma) or later**. It's one universal app that runs natively on both, with no Rosetta needed.
 
-To use it on another Mac, copy `dist/Temp Monitor.app` (or `dist/TempMonitor-mac.zip`) to a pendrive. It's a single universal app that runs on both **Apple Silicon and Intel Macs, macOS 14 (Sonoma) or later**. The app isn't notarized, so the first time on a new Mac it will say it "can't be opened". Go to **System Settings → Privacy & Security** and click **Open Anyway**. You only need to do this once per Mac.
+| File | How to install |
+|---|---|
+| **TempMonitor-x.y.dmg** (recommended) | Open it and drag **Temp Monitor** onto **Applications**. |
+| **TempMonitor-x.y.pkg** | Double-click it and follow the installer. It puts the app in `/Applications` and asks for your password. |
+| TempMonitor-mac.zip | Unzip it and move **Temp Monitor.app** anywhere, for example a USB stick. |
+
+**First launch:** the app isn't notarized by Apple, so macOS blocks it the first time ("Apple could not verify…"). Click **Done**, then go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**. The `.pkg` needs the same step before it will run. You only do this once per Mac.
+
+To uninstall, quit Temp Monitor from its menu bar icon and move **Temp Monitor.app** from Applications to the Trash.
+
+**Apple Silicon note:** M-series temperatures come from the chip's own sensors (HID, with an SMC fallback for newer chips). RAM has no separate sensor on these Macs, so it shows N/A. This path has only been tested on an Intel Mac so far, so please open an issue if a reading looks wrong. **Save diagnostics** writes a report you can attach.
 
 ## What it shows
 
@@ -51,7 +61,7 @@ Requires Xcode 16 or later. Built with Xcode 26, the sidebar and toolbar pick up
 ./build.sh
 ```
 
-This produces `dist/Temp Monitor.app` (universal, ad-hoc signed) and `dist/TempMonitor-mac.zip`.
+This produces `dist/Temp Monitor.app` (universal, ad-hoc signed), plus `TempMonitor-<version>.dmg`, `TempMonitor-<version>.pkg` and `TempMonitor-mac.zip` in `dist/`. The version comes from `Resources/Info.plist`.
 
 - `swift build && .build/debug/TempMonitor --dump` prints every reading in the terminal.
 - `.build/debug/TempMonitor --contrast-report` re-checks every colour pairing against WCAG 2.2. It exits non-zero if any check fails.
