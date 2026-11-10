@@ -16,7 +16,7 @@ Download from the [latest release](https://github.com/venkateshguggilla/temp-mon
 | **TempMonitor-x.y.pkg** | Double-click it and follow the installer. It puts the app in `/Applications` and asks for your password. |
 | TempMonitor-mac.zip | Unzip it and move **Temp Monitor.app** anywhere, for example a USB stick. |
 
-**First launch:** the app isn't notarized by Apple, so macOS blocks it the first time ("Apple could not verify…"). Click **Done**, then go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**. The `.pkg` needs the same step before it will run. You only do this once per Mac.
+Releases from 1.2 on are **signed with a Developer ID and notarized by Apple**, so they open normally with no security warnings.
 
 To uninstall, quit Temp Monitor from its menu bar icon and move **Temp Monitor.app** from Applications to the Trash.
 
@@ -63,6 +63,7 @@ Requires Xcode 16 or later. Built with Xcode 26, the sidebar and toolbar pick up
 
 This produces `dist/Temp Monitor.app` (universal, ad-hoc signed), plus `TempMonitor-<version>.dmg`, `TempMonitor-<version>.pkg` and `TempMonitor-mac.zip` in `dist/`. The version comes from `Resources/Info.plist`.
 
+- **Signing:** when a *Developer ID Application* certificate is in your keychain, `build.sh` signs the app with the hardened runtime. With a *Developer ID Installer* certificate it also signs the `.pkg`. With a notarytool profile named `TempMonitor-notary` it also notarizes and staples the app, DMG and PKG. Override these with `SIGN_IDENTITY`, `INSTALLER_IDENTITY` and `NOTARY_PROFILE`. Without them, the build is ad-hoc signed.
 - `swift build && .build/debug/TempMonitor --dump` prints every reading in the terminal.
 - `.build/debug/TempMonitor --contrast-report` re-checks every colour pairing against WCAG 2.2. It exits non-zero if any check fails.
 - `swift tools/make_icon.swift . && iconutil -c icns build/AppIcon.iconset -o Resources/AppIcon.icns` regenerates the icon.

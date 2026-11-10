@@ -43,7 +43,7 @@ func render(scale: CGFloat) -> Data {
     }
     text("Drag Temp Monitor to Applications to install", y: 64, size: 15, weight: .semibold,
          color: NSColor(srgbRed: 0x15 / 255, green: 0x18 / 255, blue: 0x1C / 255, alpha: 1))
-    text("First launch: System Settings → Privacy & Security → Open Anyway", y: 38, size: 12, weight: .regular, color: grey)
+    text("Then open Temp Monitor from your Applications folder", y: 38, size: 12, weight: .regular, color: grey)
 
     NSGraphicsContext.restoreGraphicsState()
     return rep.representation(using: .png, properties: [:])!
